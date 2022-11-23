@@ -1,6 +1,6 @@
 # 2022-11-23
 import math
-from ..metric import cosine_similarity
+import torch
 
 
 class TFIDF:
@@ -12,6 +12,7 @@ class TFIDF:
         """
         
         self.word2idf = self._get_word2idf(corpus, stop_words)
+        self.corpus_vec = torch.FloatTensor([self.get_tfidf_vec(x) for x in corpus])
     
     def _get_word2idf(self, corpus, stop_words):
         """构建词 -> IDF的词典
@@ -63,6 +64,15 @@ class TFIDF:
     def get_top_doc(self, word_list, distance_method='cosine_sim', topk=1):
         """返回语料库中相似度最高的
         """
+
+        cur_vec = self.get_tfidf_vec(word_list)
+        cur_vec = torch.FloatTensor([cur_vec])
+        if distance_method == 'cosine_sim':
+            scores = torch.nn.functional.cosine_similarity(cur_vec, self.corpus_vec)
+        
+        sorted_scores, indices = torch.sort(scores, descending=True)
+        return indices[:topk], sorted_scores[:topk]
+
 
         
 

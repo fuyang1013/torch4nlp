@@ -1,4 +1,5 @@
-from metric import cosine_similarity
+import jieba
 
 
-print(cosine_similarity([1, 2, 3], [2, 3, 4]))
+for line in open('corpus.data'):
+    print(jieba.lcut(line.rstrip()))
